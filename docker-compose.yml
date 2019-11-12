@@ -1,0 +1,90 @@
+version: "3"
+services:
+  msa-config-server:
+    container_name: msa-config-server
+    image:
+      samritiarora/msa-config-server:latest
+    expose:
+      - 8887
+    ports:
+      - "8887:8887"
+    hostname: msa-config-service
+  msa-eureka-server:
+    container_name: msa-eureka-server
+    image:
+      samritiarora/msa-eureka-server:latest
+    expose:
+      - 8210
+    ports:
+      - "8210:8210"
+    hostname: msa-eureka-server
+    links:
+      - msa-config-server:msa-config-server
+    depends_on:
+      - msa-config-server
+  msa-zuul-gateway:
+    container_name: msa-zuul-gateway
+    image:
+      samritiarora/msa-zuul-gateway:latest
+    expose:
+      - 8765
+    ports:
+      - "8765:8765"
+    links:
+      - msa-config-server:msa-config-server
+      - msa-eureka-server:msa-eureka-server
+    depends_on:
+      - msa-config-server
+      - msa-eureka-server
+  msa-checkbook-service:
+    container_name: msa-checkbook-service
+    image:
+      samritiarora/msa-checkbook-service:latest
+    expose:
+      - 8240
+    ports:
+      - "8240:8240"
+    links:
+    - msa-config-server:msa-config-server
+    - msa-eureka-server:msa-eureka-server
+    depends_on:
+      - msa-config-server
+      - msa-eureka-server
+  msa-transaction-service:
+    container_name: msa-transaction-service
+    image:
+      samritiarora/msa-transaction-service:latest
+    expose:
+      - 8230
+    ports:
+      - "8230:8230"
+    links:
+    - msa-config-server:msa-config-server
+    - msa-eureka-server:msa-eureka-server
+    depends_on:
+      - msa-config-server
+      - msa-eureka-server
+  msa-user-service:
+    container_name: msa-user-service
+    image:
+      samritiarora/msa-user-service:latest
+    expose:
+      - 8220
+    ports:
+      - "8220:8220"
+    links:
+    - msa-config-server:msa-config-server
+    - msa-eureka-server:msa-eureka-server
+    - msa-transaction-service:msa-transaction-service
+    - msa-checkbook-service:msa-checkbook-service
+    depends_on:
+      - msa-config-server
+      - msa-eureka-server
+      - msa-transaction-service
+      - msa-checkbook-service
+
+
+
+
+
+
